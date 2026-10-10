@@ -55,7 +55,7 @@ STORAGES = {
     },
 }
 
-
+WHITENOISE_MANIFEST_STRICT = False
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
