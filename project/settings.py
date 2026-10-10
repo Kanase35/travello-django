@@ -33,7 +33,7 @@ INSTALLED_APPS = [
     'accounts',
 ]
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
@@ -41,10 +41,11 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET')
 }
 
-# ✅ FIX: Keeps the Cloudinary library happy in Django 6.1+
+# Legacy fallback wrapper to keep the Cloudinary package happy during collectstatic
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
-
+# Modern Django 6.1+ configuration dictionary
+# This handles BOTH your Cloudinary media uploads and WhiteNoise CSS styling files cleanly
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
@@ -53,6 +54,7 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
+
 
 
 MIDDLEWARE = [
