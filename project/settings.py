@@ -33,30 +33,6 @@ INSTALLED_APPS = [
     'accounts',
 ]
 
-
-
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
-    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
-    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET')
-}
-
-# Legacy fallback wrapper to keep the Cloudinary package happy during collectstatic
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-
-# Modern Django 6.1+ configuration dictionary
-# This handles BOTH your Cloudinary media uploads and WhiteNoise CSS styling files cleanly
-STORAGES = {
-    "default": {
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
-
-WHITENOISE_MANIFEST_STRICT = False
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -98,10 +74,9 @@ DATABASES = {
         'USER': 'postgres',
         'PASSWORD': '335553',
         'HOST': 'localhost',
-        'PORT': '5432',  # Added default port for clarity
+        'PORT': '5432',
     }
 }
-
 
 if os.environ.get('DATABASE_URL'):
     DATABASES['default'] = dj_database_url.parse(os.environ.get('DATABASE_URL'))
@@ -144,13 +119,34 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR,'travello/static')
+    os.path.join(BASE_DIR, 'travello/static')
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
- 
+
+
+# Cloudinary Settings & Persistent Cloud Asset Routing Engine
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET')
+}
+
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        # ✅ FIXED: Bypasses the strict manifest check to prevent progressbar.js map compile crashes
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
+
+
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
@@ -159,5 +155,3 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
-
-
